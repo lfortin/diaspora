@@ -182,7 +182,8 @@ en:
   notifications:
       request_accepted: "accepted your share request."
       new_request: "offered to share with you."
-      comment_on_post: "commented on your post"
+      comment_on_post: "commented on your"
+      post: 'post'
   users:
       edit:
           export_data: "Export Data"
@@ -232,7 +233,7 @@ en:
           password_not_changed: "Password Change Failed"
           language_changed: "Language Changed"
           language_not_changed: "Language Change Failed"
-          email_notifications_changed: "Language Change Failed"
+          email_notifications_changed: "Email notifications changed"
       public:
           does_not_exist: "User %{username} does not exist!"
   comments:
@@ -365,13 +366,18 @@ en:
           edit_my_profile: "Edit my profile"
           bio: "bio"
           gender: "gender"
-          born: "born"
+          born: "birthday"
           in_aspects: "in aspects"
           cannot_remove: "Cannot remove %{name} from last aspect. (If you want to disconnect from this person you must remove contact.)"
           remove_from: "Remove %{name} from %{aspect}?"
       helper:
            results_for: " results for %{params}"
            people_on_pod_are_aware_of: " people on pod are aware of"
+      share_with:
+           share_with: "Start sharing with %{name}"
+           accepts: "Once %{name} accepts, you'll start seeing each other's posts on Diaspora"
+      aspect_list:
+           edit_membership: "edit aspect membership"
   requests:
       manage_aspect_contacts:
           manage_within: "Manage contacts within"
