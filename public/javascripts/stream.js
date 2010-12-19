@@ -11,25 +11,23 @@ var Stream = {
     $stream.not(".show").delegate("a.show_post_comments", "click", Stream.toggleComments);
 
     // publisher textarea reset
-    $publisher.find("textarea").bind("blur", function() { 
+    $publisher.find("textarea").bind("blur", function() {
       $(this).css('height','42px');
-    });
+    })
 
     // comment submit action
-    $stream.delegate("a.comment_submit", "click", function(evt) {
-      $(this).closest("form").children(".comment_box").attr("rows", 1);
-    });
-
     $stream.delegate("textarea.comment_box", "keydown", function(e) {
-      if (e.shiftKey && e.keyCode === 13) {
-        $(this).closest("form").submit();
+      if (e.keyCode === 13) {
+        if(!e.shiftKey) {
+          $(this).closest("form").submit();
+        }
       }
     });
 
     $stream.delegate("textarea.comment_box", "focus", function(evt) {
       var commentBox = $(this);
       commentBox
-        .closest("form").find(".comment_submit").fadeIn(200);
+        .closest("li").find(".submit_instructions").removeClass('hidden');
     });
 
     $stream.delegate("textarea.comment_box", "blur", function(evt) {
@@ -38,7 +36,7 @@ var Stream = {
         commentBox
           .attr('rows',2)
           .css('height','2.4em')
-          .closest("form").find(".comment_submit").hide();
+          .closest("li").find(".submit_instructions").addClass('hidden');
       }
     });
 
@@ -97,6 +95,9 @@ var Stream = {
     $(".new_status_message").bind('ajax:success', function(data, json, xhr) {
       json = $.parseJSON(json);
       WebSocketReceiver.addPostToStream(json.post_id, json.html);
+      //collapse publisher
+      $("#publisher").addClass("closed");
+      $("#photodropzone").find('li').remove();
     });
     $(".new_status_message").bind('ajax:failure', function(data, html, xhr) {
       alert('failed to post message!');
@@ -110,7 +111,7 @@ var Stream = {
       alert('failed to post message!');
     });
 
-    $(".delete").live('ajax:success', function(data, html, xhr) {
+    $(".stream").find(".delete").live('ajax:success', function(data, html, xhr) {
       $(this).parents(".message").fadeOut(150);
     });
 
