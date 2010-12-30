@@ -23,7 +23,7 @@ $(document).ready(function() {
     $("#show_photo").find("img").fadeTo(200,1);
     $("#photo_spinner").hide();
   });
-  
+
   $('.edit_photo').bind('ajax:success', function(data, json, xhr) {
     json = $.parseJSON(json);
     $(".edit_photo input[type='text']").val(json.photo.caption);
@@ -49,6 +49,19 @@ $(document).ready(function() {
     var person_id = $(this).closest(".photo_options").attr('data-actor_person');
     alert("Failed to update profile photo!");
     $("img[data-person_id='" + person_id + "']").fadeTo(200, 1);
+  });
+
+  // right/left hotkeys
+  $(document).keyup(function(e){
+    //left
+    if(e.keyCode == 37) {
+      document.location = $("#photo_show_left").attr('href');
+
+    //right
+    } else if(e.keyCode == 39) {
+      document.location = $("#photo_show_right").attr('href');
+
+    }
   });
 
 });

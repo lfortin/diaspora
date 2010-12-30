@@ -59,7 +59,7 @@ class AspectsController < ApplicationController
 
   def show
     @aspect = current_user.aspect_by_id params[:id]
-    @contacts = current_user.contacts(:pending => false)
+    @contacts = current_user.contacts.where(:pending => false)
     unless @aspect
       render :file => "#{Rails.root}/public/404.html", :layout => false, :status => 404
     else
@@ -78,7 +78,7 @@ class AspectsController < ApplicationController
 
   def manage
     @aspect = :manage
-    @contacts = current_user.contacts(:pending => false)
+    @contacts = current_user.contacts.where(:pending => false)
     @remote_requests = Request.hashes_for_person(current_user.person)
     @aspect_hashes = hashes_for_aspects @aspects, @contacts
   end
@@ -98,7 +98,7 @@ class AspectsController < ApplicationController
     @from_aspect = current_user.aspects.find(params[:from])
     @to_aspect = current_user.aspects.find(params[:to][:to])
 
-    unless current_user.move_contact( @person, @from_aspect, @to_aspect)
+    unless current_user.move_contact( @person, @to_aspect, @from_aspect)
       flash[:error] = I18n.t 'aspects.move_contact.error',:inspect => params.inspect
     end
     if aspect = current_user.aspect_by_id(params[:to][:to])

@@ -12,6 +12,12 @@
           $(".question_mark").click();
         };
       });
+      
+      if($("textarea#status_message_message").val() != ""){
+        $("#publisher").removeClass("closed");
+        $("#publisher").find("textarea").focus();
+        $("#publisher .options_and_submit").show();
+      }
 
       $("#publisher textarea, #publisher input").bind("focus", function(evt){
         $("#publisher .options_and_submit").show();
@@ -34,7 +40,6 @@
 
   .content_creation
     = form_for(StatusMessage.new, :remote => true) do |status|
-      %ul#photodropzone
       = status.error_messages
       #file-upload
         = image_tag 'icons/photos.png'
@@ -43,7 +48,9 @@
 
       %p
         %params
-          = status.text_area :message, :rows => 2, :value => params[:prefill]
+          #publisher_textarea_wrapper
+            %ul#photodropzone
+            = status.text_area :message, :rows => 2, :value => params[:prefill]
 
       = status.hidden_field :aspect_ids, :value => (aspect == :all ? aspect : aspect.id)
 

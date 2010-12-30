@@ -13,10 +13,15 @@ var Stream = {
     // publisher textarea reset
     $publisher.find("textarea").bind("blur", function() {
       $(this).css('height','42px');
-    })
+    });
+
+    // comment link form focus
+    $stream.delegate(".focus_comment_textarea", "click", function(e){
+      Stream.focusNewComment($(this), e);
+    });
 
     // comment submit action
-    $stream.delegate("textarea.comment_box", "keydown", function(e) {
+    $stream.delegate("textarea.comment_box", "keydown", function(e){
       if (e.keyCode === 13) {
         if(!e.shiftKey) {
           $(this).closest("form").submit();
@@ -27,6 +32,8 @@ var Stream = {
     $stream.delegate("textarea.comment_box", "focus", function(evt) {
       var commentBox = $(this);
       commentBox
+        .attr('rows',2)
+        .addClass('force_open')
         .closest("li").find(".submit_instructions").removeClass('hidden');
     });
 
@@ -34,8 +41,9 @@ var Stream = {
       var commentBox = $(this);
       if (!commentBox.val()) {
         commentBox
-          .attr('rows',2)
-          .css('height','2.4em')
+          .attr('rows',1)
+          .removeClass('force_open')
+          .css('height','1.4em')
           .closest("li").find(".submit_instructions").addClass('hidden');
       }
     });
@@ -77,6 +85,11 @@ var Stream = {
           '<a href="//www.youtube.com/watch?v=' + $this.data("video-id") + '" target="_blank">Watch this video on Youtube</a><br />' +
             '<iframe class="youtube-player" type="text/html" src="http://www.youtube.com/embed/' + $this.data("video-id") + '"></iframe>'
           );
+      } else if($this.data("host") === "vimeo.com"){
+        $container.html(
+            '<p><a href="http://vimeo.com/' + $this.data("video-id") + '">Watch this video on Vimeo</a></p>' +
+            '<iframe class="vimeo-player" src="http://player.vimeo.com/video/' + $this.data("video-id") + '"></iframe>'
+            );
       } else {
         $container.html('Invalid videotype <i>' + $this.data("host") + '</i> (ID: ' + $this.data("video-id") + ')');
       }
@@ -92,12 +105,18 @@ var Stream = {
       });
     });
 
+    $(".new_status_message").bind('ajax:loading', function(data, json, xhr) {
+      $("#photodropzone").find('li').remove();
+      $("#publisher textarea").removeClass("with_attachments");
+    });
+
     $(".new_status_message").bind('ajax:success', function(data, json, xhr) {
       json = $.parseJSON(json);
       WebSocketReceiver.addPostToStream(json.post_id, json.html);
       //collapse publisher
       $("#publisher").addClass("closed");
       $("#photodropzone").find('li').remove();
+      $("#publisher textarea").removeClass("with_attachments");
     });
     $(".new_status_message").bind('ajax:failure', function(data, html, xhr) {
       alert('failed to post message!');
@@ -121,10 +140,10 @@ var Stream = {
     evt.preventDefault();
     var $this = $(this),
       text = $this.html(),
-      commentBlock = $this.closest("li").find("ul.comments", ".content"),
-      commentBlockMore = $this.closest("li").find(".older_comments", ".content"),
+      showUl = $(this).closest('li'),
+      commentBlock = $this.closest("li.message").find("ul.comments", ".content"),
+      commentBlockMore = $this.closest("li.message").find(".older_comments", ".content"),
       show = (text.indexOf("show") != -1);
-
 
     if( commentBlockMore.hasClass("inactive") ) {
       commentBlockMore.fadeIn(150, function() {
@@ -133,14 +152,31 @@ var Stream = {
       });
     } else {
       if(commentBlock.hasClass("hidden")) {
-        commentBlock.fadeIn(150);
+        commentBlock.removeClass('hidden');
+        showUl.css('margin-bottom','-1em');
       }else{
-        commentBlock.hide();
+        commentBlock.addClass('hidden');
+        showUl.css('margin-bottom','1em');
       }
-      commentBlock.toggleClass("hidden");
     }
 
     $this.html(text.replace((show) ? "show" : "hide", (show) ? "hide" : "show"));
+  },
+
+  focusNewComment: function(toggle, evt) {
+    evt.preventDefault();
+    var commentBlock = toggle.closest("li.message").find("ul.comments", ".content");
+
+    if(commentBlock.hasClass('hidden')) {
+      commentBlock.removeClass('hidden');
+      commentBlock.find('textarea').focus();
+    } else {
+      if(!(commentBlock.children().length > 1)){
+        commentBlock.addClass('hidden');
+      } else {
+        commentBlock.find('textarea').focus();
+      }
+    }
   }
 };
 
